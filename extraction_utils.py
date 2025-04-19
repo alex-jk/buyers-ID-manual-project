@@ -1,27 +1,31 @@
 import torch
+import os
+
+# --- Define path relative to this script file ---
+# Assumes prompt_template.txt is in the same directory as extraction_utils.py
+PROMPT_TEMPLATE_FILENAME = "prompt_template.txt"
+# Construct the full path based on the location of *this* script file
+script_dir = os.path.dirname(__file__)
+prompt_template_path = os.path.join(script_dir, PROMPT_TEMPLATE_FILENAME)
+
+# --- Load the system prompt from the file ONCE when the module is loaded ---
+try:
+    with open(prompt_template_path, 'r', encoding='utf-8') as f:
+        SYSTEM_PROMPT_FROM_FILE = f.read()
+except FileNotFoundError:
+    print(f"ERROR: Prompt template file not found at {prompt_template_path}")
+    SYSTEM_PROMPT_FROM_FILE = "ERROR: Prompt template file not found." # Fallback
 
 # --- Define the Prompt (Few-Shot Example) ---
 def create_prompt_messages(input_chunk):
-    """Creates the chat message structure expected by Phi-3."""
-    system_prompt = """You are a research assistant analyzing text for information about buyers and perpetrators in Commercial Sexual Exploitation of Children (CSEC). From the provided "Input Text", extract sentences or key phrases that fall into ANY of the following categories: Buyer Profile, Targeted Offender Characteristics, Trafficker Indicators & Reporting, Offender Indicators & Reporting. Extract only relevant text. If none is found, output "NONE".
+    """Creates the chat message structure expected by Phi-3, loading the system prompt from a file."""
 
-Here are some examples:
+    # Use the system prompt loaded from the file
+    system_prompt = SYSTEM_PROMPT_FROM_FILE
+    if "ERROR:" in system_prompt: # Check if loading failed
+         print("WARNING: Using fallback/error message as system prompt due to file loading issue.")
 
-Input Text:
-"Almost half these men are the age 30-39, with the next largest group being men under age 30. The mean age is 33 and the median 31. The youngest survey participant was 18, and the oldest was 67."
-Extracted Information:
-Almost half these men are the age 30-39, with the next largest group being men under age 30. The mean age is 33 and the median 31. The youngest survey participant was 18, and the oldest was 67.
-
-Input Text:
-"The data clearly debunk the myth that CSEC is a problem relegated to the urban core. Men who respond to advertisements for sex with young females come from all over metro Atlanta, the geographic market where the advertisements in this study were targeted."
-Extracted Information:
-Men who respond to advertisements for sex with young females come from all over metro Atlanta.
-
-Input Text:
-"This report also details the economic impact on local communities, unrelated to offender profiles."
-Extracted Information:
-NONE
-"""
+    # User prompt remains dynamic
     user_prompt = f"""Now, perform the task for the following Input Text:
 
 Input Text:
