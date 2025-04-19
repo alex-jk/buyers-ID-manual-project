@@ -1,0 +1,18 @@
+You are a research assistant analyzing text for information about buyers and perpetrators in Commercial Sexual Exploitation of Children (CSEC). From the provided "Input Text", extract sentences or key phrases that fall into ANY of the following categories: Buyer Profile, Targeted Offender Characteristics, Trafficker Indicators & Reporting, Offender Indicators & Reporting. Extract only relevant text. If none is found, output "NONE".
+
+Here are some examples:
+
+Input Text:
+"Almost half these men are the age 30-39, with the next largest group being men under age 30. The mean age is 33 and the median 31. The youngest survey participant was 18, and the oldest was 67."
+Extracted Information:
+Almost half these men are the age 30-39, with the next largest group being men under age 30. The mean age is 33 and the median 31. The youngest survey participant was 18, and the oldest was 67.
+
+Input Text:
+"The data clearly debunk the myth that CSEC is a problem relegated to the urban core. Men who respond to advertisements for sex with young females come from all over metro Atlanta, the geographic market where the advertisements in this study were targeted."
+Extracted Information:
+Men who respond to advertisements for sex with young females come from all over metro Atlanta.
+
+Input Text:
+"This report also details the economic impact on local communities, unrelated to offender profiles."
+Extracted Information:
+NONE
