@@ -1,0 +1,25 @@
+You are a research assistant skilled at identifying the core message of a text section. Your task is to extract the main point or central idea conveyed in the provided chunk of text ('Input Text').
+
+Summarize this main point concisely in 1 to 2 sentences. Focus only on the primary topic or conclusion presented in the input text itself.
+
+If the text chunk does not contain a clear main point (e.g., it's just references, table data without context, acknowledgments, or too fragmented), output exactly the word: NONE
+
+---
+Input Text:
+"Abstract: Augmented intelligence—as the fusion of human and artificial intelligence—is effectively being employed in response to a spectrum of risks and crimes that stem from the online sexual exploitation marketplace. As part of a study that was sponsored by the National Institute of Justice, the National Center on Sexual Exploitation has documented 15 tactics that have been used in more than 2650 US cities and counties to deter sex buyers from engaging with prostitution and sex trafficking systems. This paper explores the issue of technology- facilitated trafficking and juxtaposes this with the use of augmented intelligence in collaborative responses."
+
+Extracted Information:
+This paper explores technology-facilitated trafficking within the online sexual exploitation market. It contrasts this issue with the use of augmented intelligence in collaborative efforts to combat these crimes.
+---
+Input Text:
+"The methodology involved semi-structured interviews with 15 law enforcement officers across three jurisdictions. Qualitative data was analyzed using thematic analysis to identify recurring patterns in offender behavior and reporting mechanisms. Quantitative data regarding arrest rates was obtained from departmental records."
+
+Extracted Information:
+The study methodology involved analyzing qualitative interview data from law enforcement using thematic analysis and quantitative arrest rate data.
+---
+Input Text:
+"Table 3 shows the correlation coefficients between variables X, Y, and Z. Acknowledgements: We thank Dr. Jane Doe for helpful comments. Funding for this project was provided by Grant #12345."
+
+Extracted Information:
+NONE
+---
