@@ -143,7 +143,7 @@ def process_text_chunks_with_prompt(text_chunks, generation_pipeline, prompt_fil
     print(f"Processing {num_chunks} chunks using prompt '{prompt_filename_to_use}'...")
 
     for i, chunk in enumerate(text_chunks):
-        print(f"  Processing chunk {i+1}/{num_chunks}...")
+        print(f"\n  Processing chunk {i+1}/{num_chunks}. Length: {len(chunk)} characters.")
         # Call the main extraction function from your utils file
         extraction_result = extract_information(chunk, generation_pipeline, prompt_filename_to_use)
 
