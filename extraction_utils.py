@@ -1,6 +1,7 @@
 import torch
 import os
 import re
+import nltk
 
 # --- Function to Load a Specific Prompt File ---
 def load_system_prompt(prompt_filename):
@@ -95,40 +96,101 @@ def extract_information(text_chunk, generation_pipeline, prompt_filename):
         return f"Error: Could not generate output. ({e})"
 
 # ----------------- create text chunks
-def chunk_text_by_paragraphs(text, min_chunk_chars=100, max_chunk_chars=3000): # Increased max_chunk_chars slightly
-    """Splits text into chunks based on paragraphs, trying to stay within size limits."""
-    paragraphs = re.split(r'\n\s*\n', text) # Split by double newline
+def chunk_text_by_tokens(text, tokenizer, max_chunk_tokens=3000, min_chunk_tokens=50):
+    """
+    Splits text into chunks by combining complete sentences identified using NLTK,
+    ensuring each chunk's token count does not exceed max_chunk_tokens.
+    Handles sentences that individually exceed the token limit by truncating at word boundary.
+    """
+    if not text or not hasattr(tokenizer, 'encode'):
+        print("ERROR: Text is empty or tokenizer is invalid/missing.")
+        return []
+
+    try:
+        sentences = nltk.sent_tokenize(text)
+    except LookupError:
+         print("ERROR: NLTK 'punkt' tokenizer data not found. Ensure nltk.download('punkt') ran successfully.")
+         return []
+    except Exception as e:
+         print(f"ERROR: NLTK sentence tokenization failed: {e}")
+         return []
+
     chunks = []
-    current_chunk = ""
-    for para in paragraphs:
-        para = para.strip()
-        if not para:
+    current_chunk_sentences = []
+    current_chunk_tokens = 0
+
+    for i, sent in enumerate(sentences):
+        sent = sent.strip()
+        if not sent: continue
+
+        try:
+            sentence_tokens = len(tokenizer.encode(sent, add_special_tokens=False))
+        except Exception as e:
+            print(f"    WARNING: Could not tokenize sentence {i+1}. Skipping. Error: {e}")
             continue
-        # Check if adding the next paragraph makes the chunk too long
-        # Use approximate token length (e.g., 4 chars/token) - conservative estimate
-        potential_chunk_len = len(current_chunk) + len(para) + 2 # +2 for newline separators
-        if current_chunk and potential_chunk_len > max_chunk_chars:
-            # Add current chunk if reasonably long
-            if len(current_chunk) >= min_chunk_chars:
-                chunks.append(current_chunk)
-            # Start new chunk with the current paragraph
-            current_chunk = para
-        else:
-            # Append paragraph to current chunk
-            if current_chunk:
-                current_chunk += "\n\n" + para
+
+        # --- Check if a SINGLE sentence is too long ---
+        if sentence_tokens > max_chunk_tokens:
+            print(f"    WARNING: Sentence {i+1} (tokens: {sentence_tokens}) alone exceeds max_chunk_tokens ({max_chunk_tokens}). Truncating.")
+            # Finalize previous chunk
+            if current_chunk_sentences:
+                chunk_text = " ".join(current_chunk_sentences)
+                final_chunk_tokens = len(tokenizer.encode(chunk_text, add_special_tokens=False))
+                if final_chunk_tokens >= min_chunk_tokens: chunks.append(chunk_text)
+                else: print(f"    INFO: Dropping previous short chunk (tokens: {final_chunk_tokens}) before oversized sentence.")
+
+            # Truncate at word boundary
+            estimated_char_limit = max_chunk_tokens * 3 # Heuristic target
+            truncated_sent = sent
+            if len(sent) > estimated_char_limit:
+                last_space_index = sent.rfind(' ', 0, estimated_char_limit)
+                if last_space_index != -1: truncated_sent = sent[:last_space_index]
+                else: truncated_sent = sent[:estimated_char_limit] # Fallback
+
+            # Check truncated token count
+            truncated_tokens = len(tokenizer.encode(truncated_sent, add_special_tokens=False))
+            if truncated_tokens > max_chunk_tokens:
+                print(f"    ERROR: Sentence still exceeds token limit ({truncated_tokens}) after truncation. Skipping.")
+            elif truncated_tokens >= min_chunk_tokens:
+                chunks.append(truncated_sent)
+                print(f"    INFO: Added truncated sentence chunk (tokens: {truncated_tokens}).")
             else:
-                current_chunk = para
+                print(f"    INFO: Truncated sentence too short (tokens: {truncated_tokens}). Skipping.")
 
-    # Add the last remaining chunk
-    if current_chunk and len(current_chunk) >= min_chunk_chars:
-        chunks.append(current_chunk)
+            # Reset and continue
+            current_chunk_sentences = []
+            current_chunk_tokens = 0
+            continue
+        # ---------------------------------------------
 
-    print(f"Split text into {len(chunks)} chunks.")
+        potential_chunk_tokens = current_chunk_tokens + sentence_tokens + (1 if current_chunk_sentences else 0)
+
+        if current_chunk_sentences and potential_chunk_tokens > max_chunk_tokens:
+            # Finalize current chunk
+            chunk_text = " ".join(current_chunk_sentences)
+            final_chunk_tokens = len(tokenizer.encode(chunk_text, add_special_tokens=False))
+            if final_chunk_tokens >= min_chunk_tokens: chunks.append(chunk_text)
+            else: print(f"    INFO: Dropping short chunk (tokens: {final_chunk_tokens}).")
+
+            # Start new chunk
+            current_chunk_sentences = [sent]
+            current_chunk_tokens = sentence_tokens
+        else:
+            # Add sentence to current chunk
+            current_chunk_sentences.append(sent)
+            current_chunk_tokens = potential_chunk_tokens # Approximate
+
+    # Add the last chunk
+    if current_chunk_sentences:
+        chunk_text = " ".join(current_chunk_sentences)
+        final_chunk_tokens = len(tokenizer.encode(chunk_text, add_special_tokens=False))
+        if final_chunk_tokens >= min_chunk_tokens: chunks.append(chunk_text)
+        else: print(f"    INFO: Dropping final short chunk (tokens: {final_chunk_tokens}).")
+
+    print(f"Split text into {len(chunks)} chunks using NLTK sentences (max tokens: {max_chunk_tokens}).")
     return chunks
 
-# Function to process all chunks with a specific prompt
-# Ensure extract_information is imported: from extraction_utils import extract_information
+# --- Function to Process Chunks ---
 def process_text_chunks_with_prompt(text_chunks, generation_pipeline, prompt_filename_to_use):
     """Processes each text chunk using the extraction pipeline and a specific prompt."""
     all_extractions = []
@@ -140,20 +202,23 @@ def process_text_chunks_with_prompt(text_chunks, generation_pipeline, prompt_fil
         return []
 
     num_chunks = len(text_chunks)
-    print(f"Processing {num_chunks} chunks using prompt '{prompt_filename_to_use}'...")
+    print(f"\nProcessing {num_chunks} chunks using prompt '{prompt_filename_to_use}'...")
 
     for i, chunk in enumerate(text_chunks):
-        print(f"\n  Processing chunk {i+1}/{num_chunks}. Length: {len(chunk)} characters.")
-        # Call the main extraction function from your utils file
+        # Print chunk length (optional debug)
+        print(f"  Processing chunk {i+1}/{num_chunks}. Length: {len(chunk)} characters (Token count check happens internally).")
+
+        # Call the main extraction function
         extraction_result = extract_information(chunk, generation_pipeline, prompt_filename_to_use)
 
-        # Only store non-empty/non-"NONE" results
-        if extraction_result and extraction_result.strip().upper() != "NONE":
-            print(f"    Found relevant info in chunk {i+1}: {extraction_result[:100]}...") # Print start
+        if extraction_result and extraction_result.strip().upper() != "NONE" and "Error:" not in extraction_result :
+            print(f"    Found relevant info in chunk {i+1}: {extraction_result[:100]}...")
             all_extractions.append(extraction_result)
+        elif "Error:" in extraction_result:
+             print(f"    ERROR processing chunk {i+1}: {extraction_result}")
+             # Optionally store errors: all_extractions.append(f"CHUNK {i+1} ERROR: {extraction_result}")
         else:
              print(f"    No relevant info found in chunk {i+1}.")
-        # Optional delay can go here if needed
 
-    print(f"Finished processing chunks. Found {len(all_extractions)} relevant extractions for this prompt.")
+    print(f"\nFinished processing chunks. Found {len(all_extractions)} successful relevant extractions for '{prompt_filename_to_use}'.")
     return all_extractions
