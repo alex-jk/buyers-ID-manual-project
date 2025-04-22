@@ -107,7 +107,10 @@ def chunk_text_by_tokens(text, tokenizer, max_chunk_tokens=3000, min_chunk_token
         return []
 
     try:
+        nltk.data.find('tokenizers/punkt')
+        print("DEBUG: nltk.data.find('tokenizers/punkt') succeeded inside chunk_text_by_tokens.")
         sentences = nltk.sent_tokenize(text)
+        print(f"DEBUG: nltk.sent_tokenize produced {len(sentences)} potential sentences.")
     except LookupError:
          print("ERROR: NLTK 'punkt' tokenizer data not found. Ensure nltk.download('punkt') ran successfully.")
          return []
