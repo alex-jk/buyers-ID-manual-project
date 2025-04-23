@@ -250,7 +250,8 @@ def process_text_chunks_with_prompt(
             formatted_inputs,
             batch_size=batch_size,
             truncation=True,
-            max_new_tokens=max_new_tokens # Adjust as needed, or make it a parameter
+            max_new_tokens=max_new_tokens, # Adjust as needed, or make it a parameter
+            return_full_text=False
             # Add other params like temperature, do_sample if you were using them
         )
         print(f"  Pipeline finished. Received {len(results)} results.")
