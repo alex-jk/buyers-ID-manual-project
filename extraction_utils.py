@@ -199,7 +199,7 @@ def process_text_chunks_with_prompt(
     text_chunks,
     generation_pipeline, # This is your 'pipe' object
     prompt_filename_to_use,
-    batch_size=8 # Add batch_size control,
+    batch_size=8, # Add batch_size control
     max_new_tokens=512
     ):
     """
