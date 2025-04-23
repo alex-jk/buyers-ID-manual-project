@@ -199,7 +199,8 @@ def process_text_chunks_with_prompt(
     text_chunks,
     generation_pipeline, # This is your 'pipe' object
     prompt_filename_to_use,
-    batch_size=8 # Add batch_size control
+    batch_size=8 # Add batch_size control,
+    max_new_tokens=512
     ):
     """
     Processes text chunks using the generation pipeline and a specific prompt,
@@ -249,7 +250,7 @@ def process_text_chunks_with_prompt(
             formatted_inputs,
             batch_size=batch_size,
             truncation=True,
-            max_new_tokens=512 # Adjust as needed, or make it a parameter
+            max_new_tokens=max_new_tokens # Adjust as needed, or make it a parameter
             # Add other params like temperature, do_sample if you were using them
         )
         print(f"  Pipeline finished. Received {len(results)} results.")
