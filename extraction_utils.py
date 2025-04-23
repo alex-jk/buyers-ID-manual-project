@@ -195,34 +195,109 @@ def chunk_text_by_tokens(text, tokenizer, max_chunk_tokens=3000, min_chunk_token
     return chunks
 
 # --- Function to Process Chunks ---
-def process_text_chunks_with_prompt(text_chunks, generation_pipeline, prompt_filename_to_use):
-    """Processes each text chunk using the extraction pipeline and a specific prompt."""
+def process_text_chunks_with_prompt(
+    text_chunks,
+    generation_pipeline, # This is your 'pipe' object
+    prompt_filename_to_use,
+    batch_size=8 # Add batch_size control
+    ):
+    """
+    Processes text chunks using the generation pipeline and a specific prompt,
+    using batching for efficiency. (Minimal update version)
+
+    Args:
+        text_chunks (list): A list of strings, where each string is a text chunk.
+        generation_pipeline (callable): The Hugging Face pipeline object.
+        prompt_filename_to_use (str): The path to the file containing the prompt template.
+        batch_size (int): The number of chunks to process simultaneously.
+
+    Returns:
+        list: A list of successfully extracted non-empty results.
+    """
     all_extractions = []
     if not callable(generation_pipeline):
         print("ERROR: Generation pipeline is not available or not valid.")
         return []
     if not text_chunks:
-        print("ERROR: No text chunks provided.")
+        print("WARNING: No text chunks provided.")
         return []
 
     num_chunks = len(text_chunks)
-    print(f"\nProcessing {num_chunks} chunks using prompt '{prompt_filename_to_use}'...")
+    print(f"\nProcessing {num_chunks} chunks using prompt '{prompt_filename_to_use}' with batch_size={batch_size}...")
 
-    for i, chunk in enumerate(text_chunks):
-        # Print chunk length (optional debug)
-        print(f"  Processing chunk {i+1}/{num_chunks}. Length: {len(chunk)} characters (Token count check happens internally).")
+    # 1. Read prompt ONCE
+    try:
+        with open(prompt_filename_to_use, 'r', encoding='utf-8') as pf:
+            prompt_template = pf.read().strip()
+    except Exception as e:
+        print(f"ERROR: Could not read prompt file '{prompt_filename_to_use}': {e}")
+        return [f"Error reading prompt {prompt_filename_to_use}" for _ in text_chunks] # Indicate error for all
 
-        # Call the main extraction function
-        extraction_result = extract_information(chunk, generation_pipeline, prompt_filename_to_use)
+    # 2. Prepare all inputs (replaces the loop calling extract_information)
+    formatted_inputs = []
+    print(f"  Formatting {num_chunks} inputs...")
+    for chunk in text_chunks:
+        # Assume standard formatting: prompt + chunk
+        formatted_inputs.append(f"{prompt_template}\n\nText:\n{chunk}")
 
-        if extraction_result and extraction_result.strip().upper() != "NONE" and "Error:" not in extraction_result :
-            print(f"    Found relevant info in chunk {i+1}: {extraction_result[:100]}...")
+    # 3. Call pipeline ONCE with the batch
+    print(f"  Running pipeline on {len(formatted_inputs)} inputs...")
+    try:
+        # Use the pipeline directly on the list of inputs
+        # Add essential parameters like truncation; adjust max_new_tokens if needed
+        results = generation_pipeline(
+            formatted_inputs,
+            batch_size=batch_size,
+            truncation=True,
+            max_new_tokens=512 # Adjust as needed, or make it a parameter
+            # Add other params like temperature, do_sample if you were using them
+        )
+        print(f"  Pipeline finished. Received {len(results)} results.")
+    except Exception as e:
+        print(f"ERROR: Pipeline execution failed during batch processing: {e}")
+        # Optionally print traceback
+        # import traceback
+        # traceback.print_exc()
+        return [f"Error during pipeline execution: {e}" for _ in text_chunks] # Indicate error for all
+
+    # 4. Process results (replaces the result checking inside the old loop)
+    print(f"  Filtering results...")
+    if len(results) != num_chunks:
+        print(f"  WARNING: Number of results ({len(results)}) doesn't match number of inputs ({num_chunks}).")
+
+    for i, result_item in enumerate(results):
+        # Extract the text - ** ADJUST IF YOUR PIPELINE OUTPUT IS DIFFERENT **
+        # Common case: [{'generated_text': '...'}]
+        try:
+            # Handle potential list-of-lists structure
+            if isinstance(result_item, list) and result_item:
+                 res_dict = result_item[0]
+            elif isinstance(result_item, dict):
+                 res_dict = result_item
+            else:
+                 # Try converting to string as a fallback, or handle specific error
+                 extraction_result = str(result_item)
+                 res_dict = None # Signal that we couldn't parse as dict
+
+            if res_dict and 'generated_text' in res_dict:
+                 extraction_result = res_dict['generated_text'].strip()
+            elif not res_dict:
+                 # Use the string conversion from above if it wasn't a dict/list[dict]
+                 pass # extraction_result already holds str(result_item)
+            else:
+                 extraction_result = "Error: 'generated_text' not found in result"
+
+
+        except Exception as e:
+            print(f"    Error parsing result for input {i+1}: {e} - Result: {str(result_item)[:100]}...")
+            extraction_result = f"Error: Parsing failed - {e}"
+
+
+        # Apply your original filtering logic
+        if extraction_result and extraction_result.strip().upper() != "NONE" and not extraction_result.startswith("Error:"):
+            # No need to print here, keep it concise as requested
             all_extractions.append(extraction_result)
-        elif "Error:" in extraction_result:
-             print(f"    ERROR processing chunk {i+1}: {extraction_result}")
-             # Optionally store errors: all_extractions.append(f"CHUNK {i+1} ERROR: {extraction_result}")
-        else:
-             print(f"    No relevant info found in chunk {i+1}.")
+        # else: Optional: log discarded results if needed for debugging
 
-    print(f"\nFinished processing chunks. Found {len(all_extractions)} successful relevant extractions for '{prompt_filename_to_use}'.")
+    print(f"\nFinished processing batch. Found {len(all_extractions)} successful relevant extractions for '{prompt_filename_to_use}'.")
     return all_extractions
