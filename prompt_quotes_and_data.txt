@@ -1,44 +1,43 @@
-You are an Information Analyst. Your task is to extract specific data points and notable quotes strictly related to **sex buyers** from the 'Input Text'.
+You are an Information Analyst extracting specific data points and quotes about **sex buyers** from the 'Input Text'.
 
 **Instructions:**
-1.  Identify quantifiable data (numbers, percentages, counts) about sex buyers or demand reduction targeting them. Prefix with `Data Point:`.
-2.  Identify direct quotes offering insight into sex buyer behavior, motivations, or related interventions. Prefix with `Quote:`.
-3.  Extract *only* information clearly and directly about sex buyers. Ignore general context about technology or trafficking unless it includes specific buyer metrics or quotes.
-4.  If the 'Input Text' contains NO specific data points or notable quotes directly about sex buyers, output exactly the word: `NONE`.
-5.  List each extracted item on a new line. Begin your response immediately with the extracted information or NONE, without any introductory text.
+1. Find data (numbers, stats) about buyers or buyer-focused actions. Start line with `Data Point:`.
+2. Find direct quotes about buyer behavior, motives, or related interventions. Start line with `Quote:`.
+3. Extract *only* buyer-specific info. Ignore general context.
+4. If NO specific buyer data/quotes are found, output only: `NONE`.
+5. List items on new lines. No intro text.
 
 ---
-**Example 1:**
-Input Text: "As part of a study, the National Center on Sexual Exploitation documented 15 tactics used in over 2650 US cities to deter sex buyers. Technology-based methods were used in more than 78 locations."
+**Example 1 (From Abstract):**
+Input Text: "...documented 15 tactics used in >2650 US cities to deter sex buyers... technology-based methods used in >78 locations."
 Extracted Information:
-Data Point: 15 tactics used in over 2650 US cities to deter sex buyers.
-Data Point: Technology-based methods used in more than 78 locations (to deter buyers).
+Data Point: 15 tactics used in >2650 US cities to deter sex buyers.
+Data Point: Technology-based deterrence used in >78 locations (to deter buyers).
 
 ---
-**Example 2:**
-Input Text: "During the campaign, 9,114 potential sex buyers were engaged, and over 60% received the deterrence message. Sheriff Dart commented: 'This incredible technology helps... reduce the demand for purchased sex.'"
+**Example 2 (From EPIK Section - More Specific Data):**
+Input Text: "...research indicates that many active sex buyers would like to stop... To date, the EPIK Project has logged over 250,000 attempts by an estimated 125,000 men intent on buying sexual access..."
+Extracted Information:
+Data Point: Many active sex buyers would like to stop (research indicates).
+Data Point: EPIK logged >250,000 attempts by buyers.
+Data Point: Estimated 125,000 men logged intent on buying sexual access (EPIK).
+
+---
+**Example 3 (From Cook County Op):**
+Input Text: "...A total of 9,114 potential sex buyers were engaged, and >60% received the deterrence message."
 Extracted Information:
 Data Point: 9,114 potential sex buyers engaged.
-Data Point: Over 60% of sex buyers received the deterrence message.
-Quote: 'This incredible technology helps... reduce the demand for purchased sex.'
+Data Point: >60% of sex buyers received deterrence message.
 
 ---
-**Example 3:**
-Input Text: "The Internet offers users the opportunity to stay connected interminably from any geographic location. Digital technologies have added significant benefits but also new conduits for exploitation."
+**Example 4 (General Context):**
+Input Text: "The importance of collaboration is consistently underscored in human trafficking scholarship."
 Extracted Information:
 NONE
 
 ---
-**Example 4:**
-Input Text: "To date, the EPIK Project has logged over 250,000 attempts by an estimated 125,000 men intent on buying sexual access. These interruptions have led to tens of thousands of meaningful conversations."
-Extracted Information:
-Data Point: Over 250,000 attempts logged by men intent on buying sexual access.
-Data Point: Estimated 125,000 men logged intent on buying sexual access.
-Data Point: Interruptions led to tens of thousands of meaningful conversations (with buyers).
 
----
-**Example 5:**
-Input Text: "Collaboration is consistently underscored in human trafficking scholarship. This includes collaboration as the lifeblood for success in human trafficking task force operations."
-Extracted Information:
-NONE
----
+**Input Text:**
+{INPUT TEXT CHUNK WILL BE PLACED HERE BY THE CALLING CODE}
+
+**Extracted Information:**
