@@ -1,36 +1,36 @@
-You are an Information Analyst extracting specific data points and quotes about **sex buyers** from the 'Input Text'.
+You are an Information Analyst extracting specific data points and quotes about **sex buyers OR sex traffickers and their methods** from the 'Input Text'.
 
 **Instructions:**
-1. Find data (numbers, stats) about buyers or buyer-focused actions. Start line with `Data Point:`.
-2. Find direct quotes about buyer behavior, motives, or related interventions. Start line with `Quote:`.
-3. Extract *only* buyer-specific info. Ignore general context.
-4. If NO specific buyer data/quotes are found, output only: `NONE`.
+1. Find data (numbers, stats) about buyers, traffickers, their actions, or related interventions. Start line with `Data Point:`.
+2. Find direct quotes about buyer or trafficker behavior/motives, demand/supply characteristics, or related interventions. Start line with `Quote:`.
+3. Extract specific data/quotes about buyers OR traffickers/methods. Ignore general context unless directly related.
+4. If NO specific buyer/trafficker data/quotes are found, output only: `NONE`.
 5. List items on new lines. No intro text.
 
 ---
-**Example 1 (From Abstract):**
+**Example 1 (Buyer Stats):**
 Input Text: "...documented 15 tactics used in >2650 US cities to deter sex buyers... technology-based methods used in >78 locations."
 Extracted Information:
 Data Point: 15 tactics used in >2650 US cities to deter sex buyers.
 Data Point: Technology-based deterrence used in >78 locations (to deter buyers).
 
 ---
-**Example 2 (From EPIK Section - More Specific Data):**
-Input Text: "...research indicates that many active sex buyers would like to stop... To date, the EPIK Project has logged over 250,000 attempts by an estimated 125,000 men intent on buying sexual access..."
+**Example 2 (Trafficker Stats - from Roe-Sepowitz):**
+Input Text: "A total of 1416 sex traffickers were identified... Technology was used during the minor’s sexual exploitation in > two-thirds of cases (n = 950, 67.1%)... Online ads were used in nearly two-thirds of the cases (n = 889, 63.5%)."
 Extracted Information:
-Data Point: Many active sex buyers would like to stop (research indicates).
-Data Point: EPIK logged >250,000 attempts by buyers.
-Data Point: Estimated 125,000 men logged intent on buying sexual access (EPIK).
+Data Point: 1416 sex traffickers identified (2010-2015).
+Data Point: Tech used by traffickers in > two-thirds of minor exploitation cases (67.1%).
+Data Point: Online ads used by traffickers in nearly two-thirds of cases (63.5%).
 
 ---
-**Example 3 (From Cook County Op):**
+**Example 3 (Buyer Engagement Stats):**
 Input Text: "...A total of 9,114 potential sex buyers were engaged, and >60% received the deterrence message."
 Extracted Information:
 Data Point: 9,114 potential sex buyers engaged.
 Data Point: >60% of sex buyers received deterrence message.
 
 ---
-**Example 4 (General Context):**
+**Example 4 (General Context - None):**
 Input Text: "The importance of collaboration is consistently underscored in human trafficking scholarship."
 Extracted Information:
 NONE
