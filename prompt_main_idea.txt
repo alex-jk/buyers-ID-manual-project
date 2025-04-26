@@ -1,25 +1,24 @@
-You are a research assistant skilled at identifying the core message of a text section. Your task is to extract the main point or central idea conveyed in the provided chunk of text ('Input Text').
+You are a Research Analyst tasked with extracting the key findings, main arguments, and central ideas **specifically concerning sex buyers, their characteristics, motivations, behavior, the demand they create, and interventions targeting them** from the provided **full article text** ('Input Text').
 
-Summarize this main point concisely in 1 to 2 sentences. Focus only on the primary topic or conclusion presented in the input text itself.
-
-If the text chunk does not contain a clear main point (e.g., it's just references, table data without context, acknowledgments, or too fragmented), output exactly the word: NONE
+**Instructions:**
+1.  Read the entire 'Input Text' thoroughly.
+2.  Identify and list **multiple (e.g., 4-7) distinct key points, main ideas, findings, or conclusions** presented in the article that are **specifically about sex buyers**.
+3.  For each point, summarize it clearly and concisely (usually 1-2 sentences per point).
+4.  Focus *only* on buyer-related information. Ignore points primarily about general trafficking mechanics, technology descriptions, collaboration theory, ethics, or legal frameworks *unless* they are presented as a major point *about their direct impact on or relation to buyers*.
+5.  Present the extracted points as a numbered list.
+6.  Begin your response immediately with the numbered list, without any introductory text like "Here are the main points:".
 
 ---
-Input Text:
-"Abstract: Augmented intelligence—as the fusion of human and artificial intelligence—is effectively being employed in response to a spectrum of risks and crimes that stem from the online sexual exploitation marketplace. As part of a study that was sponsored by the National Institute of Justice, the National Center on Sexual Exploitation has documented 15 tactics that have been used in more than 2650 US cities and counties to deter sex buyers from engaging with prostitution and sex trafficking systems. This paper explores the issue of technology- facilitated trafficking and juxtaposes this with the use of augmented intelligence in collaborative responses."
-
-Extracted Information:
-This paper explores technology-facilitated trafficking within the online sexual exploitation market. It contrasts this issue with the use of augmented intelligence in collaborative efforts to combat these crimes.
+**Example Output Structure (Illustrative - The model will generate the actual points based on the article):**
+1.  [Main point about buyer characteristics/profiles found in the article].
+2.  [Main point about the nature of buyer demand, e.g., for minors, as discussed].
+3.  [Main point about specific buyer behaviors, e.g., online methods].
+4.  [Main argument regarding societal factors influencing buyers, e.g., tolerance, masculinity].
+5.  [Main point about key intervention strategies targeting buyers, e.g., Nordic model, tech deterrence].
+6.  [Another distinct main idea or finding related to buyers].
 ---
-Input Text:
-"The methodology involved semi-structured interviews with 15 law enforcement officers across three jurisdictions. Qualitative data was analyzed using thematic analysis to identify recurring patterns in offender behavior and reporting mechanisms. Quantitative data regarding arrest rates was obtained from departmental records."
 
-Extracted Information:
-The study methodology involved analyzing qualitative interview data from law enforcement using thematic analysis and quantitative arrest rate data.
----
-Input Text:
-"Table 3 shows the correlation coefficients between variables X, Y, and Z. Acknowledgements: We thank Dr. Jane Doe for helpful comments. Funding for this project was provided by Grant #12345."
+**Input Text:**
+{INPUT TEXT CHUNK WILL BE PLACED HERE BY THE CALLING CODE}
 
-Extracted Information:
-NONE
----
+**Extracted Main Points/Ideas about Sex Buyers:**
