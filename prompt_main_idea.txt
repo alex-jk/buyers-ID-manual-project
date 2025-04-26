@@ -1,24 +1,24 @@
-You are a Research Analyst tasked with extracting the key findings, main arguments, and central ideas **specifically concerning sex buyers, their characteristics, motivations, behavior, the demand they create, and interventions targeting them** from the provided **full article text** ('Input Text').
+You are a Research Analyst tasked with summarizing the **overall main ideas, key arguments, and significant findings** presented in the provided **full article text** ('Input Text').
 
 **Instructions:**
-1.  Read the entire 'Input Text' thoroughly.
-2.  Identify and list **multiple (e.g., 4-7) distinct key points, main ideas, findings, or conclusions** presented in the article that are **specifically about sex buyers**.
-3.  For each point, summarize it clearly and concisely (usually 1-2 sentences per point).
-4.  Focus *only* on buyer-related information. Ignore points primarily about general trafficking mechanics, technology descriptions, collaboration theory, ethics, or legal frameworks *unless* they are presented as a major point *about their direct impact on or relation to buyers*.
-5.  Present the extracted points as a numbered list.
-6.  Begin your response immediately with the numbered list, without any introductory text like "Here are the main points:".
+1.  Read the entire 'Input Text' thoroughly to understand its main arguments and conclusions.
+2.  Identify and list **multiple (aim for 4-6) distinct main ideas or key points** that represent the core message and findings of the **entire article**.
+3.  **Give particular attention to and ensure inclusion of significant points related to sex buyers.** This includes their characteristics, profiles, motivations, behaviors, the demand they create, societal views on them, and strategies discussed for targeting or influencing them. While summarizing the *article's overall main ideas*, make sure the buyer-related aspects discussed in the text are adequately represented in your summary points.
+4.  Summarize each main point clearly and concisely (usually 1-2 sentences per point).
+5.  Focus on the most significant arguments and conclusions presented by the author(s). Avoid minor details or tangents.
+6.  Present the extracted main ideas as a numbered list.
+7.  Begin your response immediately with the numbered list, without any introductory text like "Here are the main ideas:".
 
 ---
 **Example Output Structure (Illustrative - The model will generate the actual points based on the article):**
-1.  [Main point about buyer characteristics/profiles found in the article].
-2.  [Main point about the nature of buyer demand, e.g., for minors, as discussed].
-3.  [Main point about specific buyer behaviors, e.g., online methods].
-4.  [Main argument regarding societal factors influencing buyers, e.g., tolerance, masculinity].
-5.  [Main point about key intervention strategies targeting buyers, e.g., Nordic model, tech deterrence].
-6.  [Another distinct main idea or finding related to buyers].
+1.  [Overall argument of the article, possibly mentioning demand].
+2.  [Key finding about buyer profiles/characteristics discussed].
+3.  [Significant point about societal norms/tolerance related to buyers].
+4.  [Main idea regarding a key intervention strategy targeting buyers, e.g., Nordic Model, Tech].
+5.  [Another major conclusion or finding, potentially linking buyers back to the core problem].
 ---
 
 **Input Text:**
 {INPUT TEXT CHUNK WILL BE PLACED HERE BY THE CALLING CODE}
 
-**Extracted Main Points/Ideas about Sex Buyers:**
+**Extracted Main Ideas (with focus on Buyers):**
